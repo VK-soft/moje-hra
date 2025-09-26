@@ -1,3 +1,4 @@
+import { useTimer } from "@/components/TimerContext";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
@@ -7,6 +8,7 @@ import * as Progress from "react-native-progress";
 Notifications.setNotificationHandler({
   handleNotification: async (): Promise<Notifications.NotificationBehavior> => ({
     shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: false,
     shouldSetBadge: false,
   }),
@@ -21,30 +23,36 @@ const FACTS = [
 ];
 
 export default function Home() {
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const { settings } = useTimer();
+  const [timeLeft, setTimeLeft] = useState(settings.roundDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
+  const [currentRound, setCurrentRound] = useState(1); // aktuální kolo
   const [fact, setFact] = useState(FACTS[0]);
   const notificationSent = useRef(false);
+
+  // reset časovače při změně nastavení
+  useEffect(() => {
+    setTimeLeft(isBreak ? settings.breakDuration : settings.roundDuration);
+  }, [settings, isBreak]);
 
   useEffect(() => {
     Notifications.requestPermissionsAsync();
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: ReturnType<typeof setInterval> | undefined = undefined;
 
     if (isRunning) {
-      // Odeslat notifikaci při startu cyklu jen jednou
       if (!notificationSent.current) {
         const endTime = new Date(Date.now() + timeLeft * 1000);
         const endHours = endTime.getHours().toString().padStart(2, "0");
         const endMinutes = endTime.getMinutes().toString().padStart(2, "0");
 
         sendNotification(
-          isBreak ? "Break Time" : "Focus Time",
+          isBreak ? "Break Time" : "Fight Time",
           isBreak
-            ? `Užij si krátkou pauzu! Konec ${endHours}:${endMinutes}`
+            ? `Užij si pauzu! Konec ${endHours}:${endMinutes}`
             : `Čas na soustředění! Konec ${endHours}:${endMinutes}`
         );
         notificationSent.current = true;
@@ -61,23 +69,37 @@ export default function Home() {
       }, 1000);
     }
 
-    return () => interval && clearInterval(interval);
-  }, [isRunning]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning, isBreak, timeLeft, settings]);
 
   const handleCycleEnd = () => {
     setIsRunning(false);
     notificationSent.current = false;
 
     if (!isBreak) {
+      // skončilo kolo, začíná pauza
       setIsBreak(true);
-      setTimeLeft(5 * 60);
+      setTimeLeft(settings.breakDuration);
       showRandomFact();
-      sendNotification("Focus dokončen!", "Teď je čas na 5 minut pauzy.");
+      sendNotification("Kolo dokončeno!", "Teď je čas na pauzu.");
     } else {
-      setIsBreak(false);
-      setTimeLeft(25 * 60);
-      showRandomFact();
-      sendNotification("Pauza skončila!", "Zpátky k soustředění 💪");
+      // skončila pauza, začíná další kolo
+      if (currentRound < settings.rounds) {
+        setIsBreak(false);
+        setTimeLeft(settings.roundDuration);
+        setCurrentRound((prev) => prev + 1);
+        showRandomFact();
+        sendNotification("Pauza skončila!", "Zpátky do boje 💪");
+      } else {
+        // poslední kolo skončilo
+        setIsBreak(false);
+        setTimeLeft(settings.roundDuration);
+        setCurrentRound(1);
+        showRandomFact();
+        sendNotification("Trénink dokončen!", "Gratuluji, dokončil jsi všechna kola!");
+      }
     }
   };
 
@@ -99,9 +121,10 @@ export default function Home() {
   };
 
   const handleRestart = () => {
-    setTimeLeft(isBreak ? 5 * 60 : 25 * 60);
+    setTimeLeft(isBreak ? settings.breakDuration : settings.roundDuration);
     setIsRunning(false);
     notificationSent.current = false;
+    setCurrentRound(1);
     showRandomFact();
   };
 
@@ -111,15 +134,15 @@ export default function Home() {
   const seconds = timeLeft % 60;
 
   return (
-    <LinearGradient
-      colors={isBreak ? ["#11998e", "#38ef7d"] : ["#4facfe", "#00f2fe"]}
-      style={styles.container}
-    >
-      <Text style={styles.title}>{isBreak ? "Break Time" : "Focus Timer"}</Text>
+    <LinearGradient colors={["#11998e", "#38ef7d"]} style={styles.container}>
+      <Text style={styles.title}>{isBreak ? "Break" : "Fight"}</Text>
+      <Text style={styles.roundText}>
+        Kolo {currentRound} / {settings.rounds}
+      </Text>
 
       <Progress.Circle
         size={200}
-        progress={timeLeft / (isBreak ? 5 * 60 : 25 * 60)}
+        progress={timeLeft / (isBreak ? settings.breakDuration : settings.roundDuration)}
         showsText={true}
         formatText={() => `${minutes}:${seconds.toString().padStart(2, "0")}`}
         color="#fff"
@@ -144,7 +167,8 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 20 },
-  title: { fontSize: 28, fontWeight: "bold", color: "#fff", marginBottom: 40 },
+  title: { fontSize: 28, fontWeight: "bold", color: "#fff", marginBottom: 10 },
+  roundText: { fontSize: 20, color: "#fff", marginBottom: 20, fontWeight: "600" },
   buttonsContainer: { flexDirection: "row", marginTop: 30, gap: 20 },
   button: {
     backgroundColor: "#fff",
@@ -157,6 +181,6 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
-  buttonText: { fontSize: 18, fontWeight: "600", color: "#4facfe" },
+  buttonText: { fontSize: 18, fontWeight: "600", color: "black" },
   fact: { marginTop: 40, fontSize: 16, color: "#fff", fontStyle: "italic", textAlign: "center" },
 });
