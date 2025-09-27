@@ -1,11 +1,14 @@
 // stats.tsx
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, Text } from "react-native";
+import { themeColors, useTimer } from "../components/TimerContext";
 
 export default function StatsScreen() {
+  const { settings, updateSettings } = useTimer();
+
   return (
     <LinearGradient
-      colors={["#11998e", "#38ef7d"]}
+      colors={themeColors[settings.theme]}
       style={styles.container}
     >
       <Text>Statistiky</Text>
