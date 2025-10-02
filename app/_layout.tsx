@@ -1,24 +1,60 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+// _layout.tsx
+import { TimerProvider } from "@/components/TimerContext";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <TimerProvider>
+      <Tabs
+        screenOptions={{
+          headerShown: false, // bez horního navigačního baru
+          tabBarActiveTintColor: "#000",
+          tabBarStyle: {
+            backgroundColor: "transparent",
+            position: "absolute",
+            borderTopWidth: 0, // odstraní čáru nahoře
+            elevation: 0, // Android stín
+          },
+        }}
+      >
+        <Tabs.Screen 
+          name="index" 
+          options={{ 
+            title: "Timer",
+            tabBarIcon: ({ focused }) => (
+              <Ionicons 
+                name={focused ? "timer" : "timer-outline"} 
+                size={30} 
+              /> 
+            ),
+          }} 
+        />
+        <Tabs.Screen 
+          name="settings" 
+          options={{ 
+            title: "Settings",
+            tabBarIcon: ({ focused }) => (
+              <Ionicons 
+                name={focused ? "settings" : "settings-outline"} 
+                size={30} 
+              /> 
+            ),
+          }} 
+        />
+        <Tabs.Screen 
+          name="stats" 
+          options={{ 
+            title: "Stats",
+            tabBarIcon: ({ focused }) => (
+              <Ionicons 
+                name={focused ? "bar-chart" : "bar-chart-outline"} 
+                size={30} 
+              /> 
+            ),
+          }} 
+        />
+      </Tabs>
+    </TimerProvider>
   );
 }

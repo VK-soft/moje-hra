@@ -4,7 +4,7 @@
     "slug": "FightTimer",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/FightTimerIcon.jpg",
     "scheme": "fighttimer",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
