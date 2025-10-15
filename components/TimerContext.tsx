@@ -221,7 +221,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             ...prev,
             isRunning: false,
             remainingTime: 0,
-            statusMessage: '🎉 Workout Complete! Great job!',
+            statusMessage: 'Workout Complete! Great job!',
           };
         } else {
           // Start break

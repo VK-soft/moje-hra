@@ -1,3 +1,4 @@
+// ...existing code...
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
@@ -81,28 +82,31 @@ export default function SettingsScreen() {
               <View style={styles.pickerRow}>
                 <Picker
                   selectedValue={Math.floor(settings.roundDuration / 60)}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, color: "#000" }}
+                  itemStyle={{ color: "#000" }}
                   onValueChange={(val) =>
+                    // clamp to at least 1 second total
                     updateSettings({
-                      roundDuration: val * 60 + (settings.roundDuration % 60),
+                      roundDuration: Math.max(1, val * 60 + (settings.roundDuration % 60)),
                     })
                   }
                 >
                   {Array.from({ length: 61 }, (_, i) => (
-                    <Picker.Item key={i} label={`${i} min`} value={i} />
+                    <Picker.Item key={i} label={`${i} min`} value={i} color="#000" />
                   ))}
                 </Picker>
                 <Picker
                   selectedValue={settings.roundDuration % 60}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, color: "#000" }}
+                  itemStyle={{ color: "#000" }}
                   onValueChange={(val) =>
                     updateSettings({
-                      roundDuration: Math.floor(settings.roundDuration / 60) * 60 + val,
+                      roundDuration: Math.max(1, Math.floor(settings.roundDuration / 60) * 60 + val),
                     })
                   }
                 >
                   {Array.from({ length: 60 }, (_, i) => (
-                    <Picker.Item key={i} label={`${i} s`} value={i} />
+                    <Picker.Item key={i} label={`${i} s`} value={i} color="#000" />
                   ))}
                 </Picker>
               </View>
@@ -113,28 +117,30 @@ export default function SettingsScreen() {
               <View style={styles.pickerRow}>
                 <Picker
                   selectedValue={Math.floor(settings.breakDuration / 60)}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, color: "#000" }}
+                  itemStyle={{ color: "#000" }}
                   onValueChange={(val) =>
                     updateSettings({
-                      breakDuration: val * 60 + (settings.breakDuration % 60),
+                      breakDuration: Math.max(1, val * 60 + (settings.breakDuration % 60)),
                     })
                   }
                 >
                   {Array.from({ length: 61 }, (_, i) => (
-                    <Picker.Item key={i} label={`${i} min`} value={i} />
+                    <Picker.Item key={i} label={`${i} min`} value={i} color="#000" />
                   ))}
                 </Picker>
                 <Picker
                   selectedValue={settings.breakDuration % 60}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, color: "#000" }}
+                  itemStyle={{ color: "#000" }}
                   onValueChange={(val) =>
                     updateSettings({
-                      breakDuration: Math.floor(settings.breakDuration / 60) * 60 + val,
+                      breakDuration: Math.max(1, Math.floor(settings.breakDuration / 60) * 60 + val),
                     })
                   }
                 >
                   {Array.from({ length: 60 }, (_, i) => (
-                    <Picker.Item key={i} label={`${i} s`} value={i} />
+                    <Picker.Item key={i} label={`${i} s`} value={i} color="#000" />
                   ))}
                 </Picker>
               </View>
@@ -144,10 +150,12 @@ export default function SettingsScreen() {
             {pickerType === "rounds" && (
               <Picker
                 selectedValue={settings.rounds}
-                onValueChange={(val) => updateSettings({ rounds: val })}
+                style={{ color: "#000" }}
+                itemStyle={{ color: "#000" }}
+                onValueChange={(val) => updateSettings({ rounds: Math.max(1, val) })}
               >
                 {Array.from({ length: 20 }, (_, i) => (
-                  <Picker.Item key={i + 1} label={`${i + 1}`} value={i + 1} />
+                  <Picker.Item key={i + 1} label={`${i + 1}`} value={i + 1} color="#000" />
                 ))}
               </Picker>
             )}

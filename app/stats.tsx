@@ -3,14 +3,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import {
-    Alert,
-    FlatList,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { themeColors, useTimer } from "../components/TimerContext";
 
@@ -134,37 +133,33 @@ export default function StatsScreen() {
       <Text style={styles.title}>Workout Stats</Text>
 
       {/* Summary Cards */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.summaryContainer}
-      >
+      <View style={styles.summaryContainer}>
         <View style={styles.summaryCard}>
-          <Ionicons name="trophy" size={32} color="#FFD700" />
+          <Ionicons name="trophy" size={28} color="#FFD700" />
           <Text style={styles.summaryNumber}>{totalWorkouts}</Text>
-          <Text style={styles.summaryLabel}>Total Workouts</Text>
+          <Text style={styles.summaryLabel}>Total{'\n'}Workouts</Text>
         </View>
 
         <View style={styles.summaryCard}>
-          <Ionicons name="flame" size={32} color="#FF6B6B" />
+          <Ionicons name="flame" size={28} color="#FF6B6B" />
           <Text style={styles.summaryNumber}>{totalRoundsCompleted}</Text>
-          <Text style={styles.summaryLabel}>Rounds Completed</Text>
+          <Text style={styles.summaryLabel}>Total{'\n'}Rounds</Text>
         </View>
 
         <View style={styles.summaryCard}>
-          <Ionicons name="time" size={32} color="#4ECDC4" />
+          <Ionicons name="time" size={28} color="#4ECDC4" />
           <Text style={styles.summaryNumber}>
             {Math.floor(totalTimeSpent / 60)}m
           </Text>
-          <Text style={styles.summaryLabel}>Total Time</Text>
+          <Text style={styles.summaryLabel}>Total{'\n'}Time</Text>
         </View>
 
         <View style={styles.summaryCard}>
-          <Ionicons name="stats-chart" size={32} color="#95E1D3" />
+          <Ionicons name="stats-chart" size={28} color="#95E1D3" />
           <Text style={styles.summaryNumber}>{averageRounds}</Text>
-          <Text style={styles.summaryLabel}>Avg Rounds</Text>
+          <Text style={styles.summaryLabel}>Avg{'\n'}Rounds</Text>
         </View>
-      </ScrollView>
+      </View>
 
       {/* Workout History */}
       <Text style={styles.sectionTitle}>Recent Workouts</Text>
@@ -238,17 +233,23 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: 60, paddingHorizontal: 20 },
   title: { fontSize: 32, fontWeight: "bold", color: "#fff", marginBottom: 20 },
   
-  summaryContainer: { marginBottom: 20 },
+  summaryContainer: { 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    gap: 8,
+  },
   summaryCard: {
     backgroundColor: "rgba(255,255,255,0.2)",
-    padding: 20,
+    padding: 12,
     borderRadius: 15,
     alignItems: "center",
-    marginRight: 15,
-    width: 140,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 100,
   },
-  summaryNumber: { fontSize: 28, fontWeight: "bold", color: "#fff", marginTop: 10 },
-  summaryLabel: { fontSize: 12, color: "#fff", marginTop: 5, textAlign: "center" },
+  summaryNumber: { fontSize: 22, fontWeight: "bold", color: "#fff", marginTop: 6, marginBottom: 4 },
+  summaryLabel: { fontSize: 10, color: "#fff", textAlign: "center", lineHeight: 14 },
 
   sectionTitle: { fontSize: 22, fontWeight: "600", color: "#fff", marginBottom: 15 },
   
